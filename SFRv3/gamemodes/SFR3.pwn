@@ -3,7 +3,8 @@
 
 	Super FreeRoam
 	adri1
-										
+	Partially rewritten by Knogle
+	Translation to Portuguese and English by Knogle				
 */
 
 /* INCLUDES */
@@ -11,22 +12,22 @@
 #include <a_samp>
 #include <a_http>
 #include <YSI\y_iterate>
+#include <YSI\y_va>
 #include <streamer>
 #include <sscanf2>
-#include <izcmd>
+#include <Pawn.CMD>
 //#include <dns>
 
-#undef	MAX_PLAYERS
-#define MAX_PLAYERS				(120)
+
 #define	MAX_PING				(750)
 
 new DB:Database, DB_Query[1800];
 
 #define SERVER_VERSION	"4.2" 
-#define HOSTNAME		"« Super FreeRoam "SERVER_VERSION" (Español - English - Português - 0.3.7) »"
+#define HOSTNAME		"Super FreeRoam "SERVER_VERSION" (Español - English - Português - 0.3.7)"
 #define GAMEMODETEXT	"Freeroam Derby Race Español - English - Português"
 #define LANGUAGE		"Español - English - Português"
-#define SERVER_WEB		"https://github.com/Knogle/RetroMP"
+#define SERVER_WEB		"github.com/Knogle/RetroMP"
 #define SERVER_NAME		"Super FreeRoam "SERVER_VERSION""
 #define VERSION_DATE	"31/Maio/2019"
 #define VERSION_DATE_1	"31.05.19"
@@ -64,7 +65,6 @@ new DB:Database, DB_Query[1800];
 	(((newkeys & (%0)) != (%0)) && ((oldkeys & (%0)) == (%0)))
 
 
-#define SendMessageEx(%0,%1,%2,%3,%4,%5) format(string,sizeof(string),(player_Language[%0]==0)?(%2):(player_Language[%0]==1)?(%3):(%4),%5),SendClientMessage(%0,%1,string)
 
 
 #define MAX_RESULTS	10
@@ -2497,7 +2497,7 @@ public OnPlayerRequestClass(playerid, classid)
 		else
 		{
 			PI[playerid][P_SAVED_SKIN] = classid;
-			SendClientMessageEx(-1, -1, "{B0E66A}%s {CCCCCC}ha entrado al servidor", PI[playerid][P_NAME]);
+			SendMessageEx(-1, -1, "{B0E66A}%s(%d) {CCCCCC}has joined the server", "{B0E66A}%s(%d) {CCCCCC}ha entrado al servidor", "{B0E66A}%s(%d) {CCCCCC}entrou no servidor", PI[playerid][P_NAME]);
 		}
 		
 		db_free_result(Result);
@@ -2538,6 +2538,152 @@ stock SendMessage(playerid, colour, Language1[], Language2[] , Language3[])
 	}
 	return true;
 }
+
+
+stock SendMessageEx(playerid, colour, Language1[], Language2[], Language3[],  va_args<>)
+{
+
+	if(playerid == -1)
+	{
+		for(new i;i<MAX_PLAYERS;i++)
+		{
+			if(!IsPlayerConnected(i)) continue;
+			if(IsPlayerNPC(i)) continue;
+			switch( player_Language[i] )
+			{
+			case 0: //Language 1
+				{
+					new
+					str[145];
+					va_format(str, sizeof (str), Language1, va_start<5>);
+					return SendClientMessage(i,colour,str);
+				}
+			case 1: //Language 2
+				{
+					new
+					str[145];
+					va_format(str, sizeof (str), Language2, va_start<5>);
+					return SendClientMessage(i,colour,str);
+				}
+				
+			case 2: //Language 3
+				{
+					new
+					str[145];
+					va_format(str, sizeof (str), Language3, va_start<5>);
+					return SendClientMessage(i,colour,str);
+				}
+				
+			}
+		}
+	}
+	else
+	{
+		switch( player_Language[playerid] )
+		{
+		case 0: //Language 1
+			{
+				new
+				str[145];
+				va_format(str, sizeof (str), Language1, va_start<5>);
+				return SendClientMessage(playerid,colour,str);
+			}
+		case 1: //Language 2
+			{
+				new
+				str[145];
+				va_format(str, sizeof (str), Language2, va_start<5>);
+				return SendClientMessage(playerid,colour,str);
+			}
+			
+		case 2: //Language 3
+			{
+				new
+				str[145];
+				va_format(str, sizeof (str), Language3, va_start<5>);
+				return SendClientMessage(playerid,colour,str);
+			}
+			
+		}
+
+
+	}
+	return 1;
+}
+
+/*
+stock SendMessageEx(playerid, colour, Language1[], Language2[], Language3[],  va_args<>)
+{
+
+	if(playerid == -1)
+	{
+		for(new i;i<MAX_PLAYERS;i++)
+		{
+			if(!IsPlayerConnected(i)) continue;
+			if(IsPlayerNPC(i)) continue;
+			switch( player_Language[playerid] )
+			{
+			case 0: //Language 1
+				{
+					new
+					str[145];
+					va_format(str, sizeof (str), Language1, va_start<5>);
+					return SendClientMessage(playerid,colour,str);
+				}
+			case 1: //Language 2
+				{
+					new
+					str[145];
+					va_format(str, sizeof (str), Language2, va_start<5>);
+					return SendClientMessage(playerid,colour,str);
+				}
+				
+			case 2: //Language 3
+				{
+					new
+					str[145];
+					va_format(str, sizeof (str), Language3, va_start<5>);
+					return SendClientMessage(playerid,colour,str);
+				}
+				
+			}
+		}
+	}
+	else
+	{
+		switch( player_Language[playerid] )
+		{
+		case 0: //Language 1
+			{
+				new
+				str[145];
+				va_format(str, sizeof (str), Language1, va_start<5>);
+				return SendClientMessage(playerid,colour,str);
+			}
+		case 1: //Language 2
+			{
+				new
+				str[145];
+				va_format(str, sizeof (str), Language2, va_start<5>);
+				return SendClientMessage(playerid,colour,str);
+			}
+			
+		case 2: //Language 3
+			{
+				new
+				str[145];
+				va_format(str, sizeof (str), Language3, va_start<5>);
+				return SendClientMessage(playerid,colour,str);
+			}
+			
+		}
+
+
+	}
+	return 1;
+}
+
+*/
 stock SendMessageToAll( colour, Language1[], Language2[] , Language3[])
 {
 	for(new i;i<MAX_PLAYERS;i++)
@@ -2923,17 +3069,17 @@ public OnPlayerSpawn(playerid)
 public OnPlayerDisconnect(playerid, reason)
 {
 	TOTAL_PLAYERS -= 1;
-	
+	player_Language[playerid] = -1;
 	UpdateCountPlayersTextDraws();
 	BlockIpAddress(PI[playerid][P_IP], 12000);
 	
 	switch(reason)
 	{
-	case 0: SendClientMessageEx(-1, -1, "{B0E66A}%s {CCCCCC}ha salido del servidor (crash)", PI[playerid][P_NAME]);
-	case 1: SendClientMessageEx(-1, -1, "{B0E66A}%s {CCCCCC}ha salido del servidor", PI[playerid][P_NAME]);
+	case 0: SendMessageEx(-1, -1, "{B0E66A}%s(%d) {CCCCCC} has left the server. (Lost Connection)", "{B0E66A}%s(%d) {CCCCCC} ha salido del servidor (crash)", "{B0E66A}%s(%d) {CCCCCC} deixou o servidor (crash)", PI[playerid][P_NAME],playerid);
+	case 1: SendMessageEx(-1, -1, "{B0E66A}%s(%d) {CCCCCC} has left the server. (Leaving)", "{B0E66A}%s(%d) {CCCCCC} ha salido del servidor (Ha dejado)", "{B0E66A}%s(%d) {CCCCCC} deixou o servidor (Deixou)", PI[playerid][P_NAME],playerid);
 	case 2:
 		{
-			if(!PI[playerid][P_BOT]) SendClientMessageEx(-1, -1, "{B0E66A}%s {CCCCCC}ha salido del servidor (%s)", PI[playerid][P_NAME], ( PI[playerid][P_BANNED] == 1 ? ("baneado") : ("expulsado") ) );
+			if(!PI[playerid][P_BOT]) SendMessageEx(-1, -1, "{B0E66A}%s(%d) {CCCCCC} has left the server. (%s)", "{B0E66A}%s(%d) {CCCCCC} ha salido del servidor (%s)", "{B0E66A}%s(%d) {CCCCCC} deixou o servidor (%s)", PI[playerid][P_NAME], ( PI[playerid][P_BANNED] == 1 ? ("baneado") : ("expulsado") ) );
 		}
 	}
 	
@@ -3270,7 +3416,7 @@ public OnPlayerClickTextDraw(playerid, Text:clickedid)
 			NewPersonalCar(playerid, VehiclesConce[PI[playerid][P_SHOPCARINDEX]][0], minrand(128, 255), minrand(128, 255));
 			UpdateUserData(playerid);
 			HidePlayerCarShop(playerid);
-			SendClientMessageEx(playerid, -1, "{"ORANGE"}Felicidades! Has comprado un {C6D855}%s. {"ORANGE"}Usa {C6D855}/vv {"ORANGE"}para usar tu vehículo.", VehicleNames[ VehiclesConce[PI[playerid][P_SHOPCARINDEX]][0] - 400]);
+			SendMessageEx(playerid, -1, "{"ORANGE"}Congratulations! You have bought a(n) {C6D855}%s. {"ORANGE"}Use {C6D855}/vv {"ORANGE"}to use your vehicle.", "{"ORANGE"}Felicidades! Has comprado un {C6D855}%s. {"ORANGE"}Usa {C6D855}/vv {"ORANGE"}para usar tu vehículo.", "{"ORANGE"}Parabéns! Você comprou um {C6D855}%s. {"ORANGE"}Usa {C6D855}/vv {"ORANGE"}para usar seu veículo.", VehicleNames[ VehiclesConce[PI[playerid][P_SHOPCARINDEX]][0] - 400]);
 		}
 		else
 		{
@@ -4671,17 +4817,14 @@ CMD:color(playerid, params[])
 	ShowDialog(playerid, DIALOG_SELECT_COLOR);
 	return 1;
 }
-
-CMD:colores(playerid, params[])
-{
-	return cmd_color(playerid, params);
-}
+alias:color("colores", "cores"); //
 
 CMD:musica(playerid, params[])
 {
 	ShowDialog(playerid, DIALOG_SOCIAL_MUSIC);
 	return 1;
 }
+alias:musica("music");
 
 CMD:radio(playerid, params[])
 {
@@ -4694,6 +4837,7 @@ CMD:stop(playerid, params[])
 	StopAudioStreamForPlayer(playerid);
 	return 1;
 }
+alias:stop("parar");
 
 CMD:guardar(playerid, params[])
 {
@@ -4702,12 +4846,14 @@ CMD:guardar(playerid, params[])
 	SendMessage(playerid, -1, "Data refreshed.", "Datos actualizados.", "Dados atualizados.");
 	return 1;
 }
+alias:guardar("save","salvar");
 
 CMD:stats(playerid, params[])
 {
 	ShowDialog(playerid, DIALOG_STATS);
 	return 1;
 }
+
 
 CMD:kill(playerid, params[])
 {
@@ -4722,11 +4868,8 @@ CMD:godmode(playerid, params[])
 	else ActivePlayerGodMode(playerid);
 	return 1;
 }
+alias:godmode("god","deus","mododeus");
 
-CMD:god(playerid, params[])
-{
-	return cmd_godmode(playerid, params);
-}
 
 CMD:teles(playerid, params[])
 {
@@ -4734,11 +4877,8 @@ CMD:teles(playerid, params[])
 	ShowDialog(playerid, DIALOG_TELEPORTS);
 	return 1;
 }
+alias:teles("t","teleports");
 
-CMD:t(playerid, params[])
-{
-	return cmd_teles(playerid, params);
-}
 
 CMD:v(playerid, params[])
 {
@@ -4802,13 +4942,13 @@ CMD:like(playerid, params[])
 			{
 				format(DB_Query, sizeof(DB_Query), "DELETE FROM LIKES WHERE ID_USUARIO = '%d' AND ID_SONG = '%d'", PI[playerid][P_ID], id);
 				db_query(Database, DB_Query);
-				SendClientMessageEx(playerid, -1, "{CCCCCC}La canción {90C3D4}'%s' {CCCCCC}ya no te gusta.", song_title);
+				SendMessageEx(playerid, -1, "The song {90C3D4}'%s' {CCCCCC}you do not like anymore.", "{CCCCCC}La canción {90C3D4}'%s' {CCCCCC}ya no te gusta.", "{CCCCCC}A música {90C3D4}'%s' {CCCCCC}você não gosta mais.", song_title);
 			}
 			else
 			{
 				format(DB_Query, sizeof(DB_Query), "INSERT INTO LIKES (ID_USUARIO, ID_SONG) VALUES ('%d', '%d')", PI[playerid][P_ID], id);
 				db_query(Database, DB_Query);
-				SendClientMessageEx(playerid, -1, "{CCCCCC}Has indicado que la canción {90C3D4}'%s' {CCCCCC}te gusta.", song_title);
+				SendMessageEx(playerid, -1, "{CCCCCC}You indicated that you like the song {90C3D4}'%s'.", "{CCCCCC}Has indicado que la canción {90C3D4}'%s' {CCCCCC}te gusta.", "{CCCCCC}Você indicou que a música {90C3D4}'%s' você gostou.", song_title);
 				SendMessage(playerid, -1, "{CCCCCC}You can remove this favorite song using the same command.", "{CCCCCC}Puedes quitar esta canción de favoritos usando el mismo comando.", "{CCCCCC}Você pode remover essa música favorita usando o mesmo comando.");
 			}
 		}
@@ -4866,9 +5006,11 @@ CMD:duelo(playerid, params[])
 		return 1;
 	}
 	
-	SendMessage(playerid, -1, "{CCCCCC}Use /duelo <playerid/playername> <bet $>", "{CCCCCC}Usa /duelo <playerid/nombre> <apuesta $>", "{CCCCCC}Usa /duelo <playerid/nome> <aposta $>");	
+	SendMessage(playerid, -1, "{CCCCCC}Use /duel <playerid/playername> <bet $>", "{CCCCCC}Usa /duelo <playerid/nombre> <apuesta $>", "{CCCCCC}Usa /duelo <playerid/nome> <aposta $>");	
 	return 1;
 }
+alias:duelo("duel");
+
 
 CMD:dls(playerid, params[])
 {
@@ -4917,7 +5059,7 @@ CMD:aplay(playerid, params[])
 			if(!PI[i][P_IGNORE_MUSIC])
 			{
 				PlayAudioStreamForPlayer(i, url);
-				SendClientMessageEx(i, -1, "{CCCCCC}Reproduciendo {90C3D4}'%s' {CCCCCC}usa {CCFF00}/play %d {CCCCCC}para volver a reproducir esta canción.", song_title, params[0]);
+				SendMessageEx(playerid, -1, "{CCCCCC}Started playback of{90C3D4}'%s' {CCCCCC}use {CCFF00}/play %d {CCCCCC}to replay this song.", "{CCCCCC}Reproduciendo {90C3D4}'%s' {CCCCCC}usa {CCFF00}/play %d {CCCCCC}para volver a reproducir esta canción.", "{CCCCCC}Reproduzindo {90C3D4}'%s' {CCCCCC}usa {CCFF00}/play %d {CCCCCC}para tocar essa música novamente.", song_title, params[0]);
 			}
 		}
 	}
@@ -5022,6 +5164,7 @@ CMD:policia(playerid, params[])
 	SetPlayerAttachedObject(playerid, 0, 19161, 2, 0.078999, 0.000000, 0.000000, 0.000000, 0.000000, 0.000000, 1.000000, 1.000000, 1.000000); //POLICE
 	return 1;
 }
+alias:policia("police");
 
 CMD:hatmj(playerid, params[])
 {
@@ -5064,6 +5207,7 @@ CMD:bolsa(playerid, params[])
 	SetPlayerAttachedObject(playerid, 0, 19090, 2, -0.315999, 0.019999, 0.030000, 0.000000, 0.000000, 0.000000, 1.455999, 0.526000, 0.541000); //BAG
 	return 1;
 }
+alias:bolsa("bag");
 
 CMD:dj(playerid, params[])
 {
@@ -5176,6 +5320,7 @@ CMD:vaca(playerid, params[])
 	SetPlayerAttachedObject(playerid,0,16442,15,0.000000,0.000000,0.259000,0.000000,0.000000,-104.400001,1.000000,1.000000,1.000000);//vaca
 	return 1;
 }
+alias:vaca("cow");
 
 CMD:pm(playerid, params[])
 {
@@ -5188,8 +5333,8 @@ CMD:pm(playerid, params[])
 	PlayerPlaySoundEx(playerid, 1149, 0.0, 0.0, 0.0);
 	PlayerPlaySoundEx(params[0], 1085, 0.0, 0.0, 0.0);
 
-	SendClientMessageEx(playerid, -1, "{FFFC33}[PM] enviado a %s (%d): %s", PI[params[0]][P_NAME], params[0], message);
-	SendClientMessageEx(params[0], -1, "{FFFC33}[PM] de %s (%d): %s", PI[playerid][P_NAME], playerid, message);
+	SendMessageEx(playerid, -1, "{FFFC33}[PM] sent to %s (%d): %s", "{FFFC33}[PM] enviado a %s (%d): %s", "{FFFC33}[PM] enviado a %s (%d): %s", PI[params[0]][P_NAME], params[0], message);
+	SendMessageEx(params[0], -1, "{FFFC33}[PM] from %s (%d): %s", "{FFFC33}[PM] de %s (%d): %s", "{FFFC33}[PM] de %s (%d): %s", PI[playerid][P_NAME], playerid, message);
 	return 1;
 }
 
@@ -5214,16 +5359,16 @@ CMD:animaciones(playerid, params[])
 	ShowDialog(playerid, DIALOG_ANIMS);
 	return 1;
 }
-CMD:anims(playerid, params[])
-{
-	return cmd_animaciones(playerid, params);
-}
+alias:animaciones("anims","animations","animação");
+
+
 CMD:parar(playerid, params[])
 {
 	ApplyAnimation(playerid, "CARRY", "crry_prtial", 4.1, 0, 0, 0, 0, 0, true);
 	ClearAnimations(playerid);
 	return 1;
 }
+
 CMD:rendirse(playerid, params[])
 {
 	SetPlayerSpecialAction(playerid, SPECIAL_ACTION_HANDSUP); //rendirse
@@ -5436,6 +5581,9 @@ CMD:bailar(playerid, params[])
 	}
 	return 1;
 }
+alias:bailar("dance","dançar");
+
+
 CMD:alentar(playerid, params[])
 {
 	ApplyAnimation(playerid,"ON_LOOKERS","shout_02",4.1,7,5,1,1,1);//alentar
@@ -5448,6 +5596,7 @@ CMD:hablar(playerid, params[])
 	SendMessage(playerid, -1, "{C6D855}To cancel the current animation use {"ORANGE"}/parar", "{C6D855}Para cancelar la animacion utiliza el comando {"ORANGE"}/parar", "{C6D855}Para cancelar a animação use o comando {"ORANGE"}/parar");
 	return 1;
 }
+alias:hablar("falar","speak");
 
 //TELES
 
@@ -6996,41 +7145,43 @@ CMD:ayuda(playerid, params[])
 	ShowDialog(playerid, DIALOG_HELP1);
 	return 1;
 }
+alias:ayuda("help","ajuda");
 
 CMD:ayuda1(playerid, params[])
 {
 	ShowDialog(playerid, DIALOG_HELP1);
 	return 1;
 }
+alias:ayuda1("help1","ajuda1");
 
 CMD:ayuda2(playerid, params[])
 {
 	ShowDialog(playerid, DIALOG_HELP2);
 	return 1;
 }
+alias:ayuda2("help2","ajuda2");
 
 CMD:ayuda3(playerid, params[])
 {
 	ShowDialog(playerid, DIALOG_HELP3);
 	return 1;
 }
+alias:ayuda3("help3","ajuda3");
 
 CMD:reglas(playerid, params[])
 {
 	ShowDialog(playerid, DIALOG_RULES);
 	return 1;
 }
+alias:reglas("regras","rules");
 
 CMD:comandos(playerid, params[])
 {
 	ShowDialog(playerid, DIALOG_COMMANDS);
 	return 1;
 }
+alias:comandos("commands","cmds","c");
 
-CMD:c(playerid, params[])
-{
-	return cmd_comandos(playerid, params);
-}
 
 CMD:creditos(playerid, params[])
 {
@@ -7046,22 +7197,19 @@ CMD:registrarse(playerid, params[])
 	else
 	{
 		new time = (NECESSARY_TIME_REGISTER-(gettime()-PI[playerid][P_USER_CONNECTED_TICKCOUNT]));
-		SendClientMessageEx(playerid, -1, "{"ORANGE"}Debes de jugar al menos {"GREY"}%s minutos {"ORANGE"}más para registrar la cuenta.", TimeConvert(time));
+		SendMessageEx(playerid, -1, "{"ORANGE"}You have to play at least {"GREY"}%s minutes {"ORANGE"}more to register your account.", "{"ORANGE"}Debes de jugar al menos {"GREY"}%s minutos {"ORANGE"}más para registrar la cuenta.", "{"ORANGE"}Deves jogar pelo menos {"GREY"}%s minutos {"ORANGE"} mais para registrar a cuenta.", TimeConvert(time));
 	}
 	return 1;
 }
+alias:registrarse("register","registrar");
 
 CMD:modo(playerid, params[])
 {
 	ShowDialog(playerid, DIALOG_SELECT_MODE);
 	return 1;
 }
+alias:modo("mode","m");
 
-CMD:m(playerid, params[])
-{
-	ShowDialog(playerid, DIALOG_SELECT_MODE);
-	return 1;
-}
 
 CMD:dm(playerid, params[])
 {
@@ -7141,8 +7289,8 @@ CMD:dardinero(playerid, params[])
 	PlayerPlaySoundEx(playerid, 1149, 0.0, 0.0, 0.0);
 	PlayerPlaySoundEx(params[0], 1085, 0.0, 0.0, 0.0);
 	
-	SendClientMessageEx(playerid, -1, "{"ORANGE"}Has dado {"GREY"}$%d {"ORANGE"}a {"GREY"}%s.", params[1], PI[params[0]][P_NAME]);
-	SendClientMessageEx(params[0], -1, "{"GREY"}%s {"ORANGE"}te ha dado {"GREY"}$%d.", PI[playerid][P_NAME], params[1]);
+	SendMessageEx(playerid, -1, "{"ORANGE"}Has given {"GREY"}$%d {"ORANGE"}to {"GREY"}%s.", "{"ORANGE"}Has dado {"GREY"}$%d {"ORANGE"}a {"GREY"}%s.", "{"ORANGE"}Deu {"GREY"}$%d {"ORANGE"}a {"GREY"}%s.", params[1], PI[params[0]][P_NAME]);
+	SendMessageEx(params[0], -1, "{"GREY"}%s {"ORANGE"}has given you {"GREY"}$%d.", "{"GREY"}%s {"ORANGE"}te ha dado {"GREY"}$%d.", "{"GREY"}%s {"ORANGE"}te deu {"GREY"}$%d.", PI[playerid][P_NAME], params[1]);
 	GivePlayerMoneyEx(params[0], params[1]);
 	GivePlayerMoneyEx(playerid, -params[1]);
 	
@@ -7150,6 +7298,7 @@ CMD:dardinero(playerid, params[])
 	UsersLog(log);
 	return 1;
 }
+alias:dardinero("dardinheiro","givemoney","givecash");
 
 CMD:darscore(playerid, params[])
 {
@@ -7162,8 +7311,8 @@ CMD:darscore(playerid, params[])
 	PlayerPlaySoundEx(playerid, 1149, 0.0, 0.0, 0.0);
 	PlayerPlaySoundEx(params[0], 1085, 0.0, 0.0, 0.0);
 	
-	SendClientMessageEx(playerid, -1, "{"ORANGE"}Has dado {"GREY"}%d SCORE {"ORANGE"}a {"GREY"}%s.", params[1], PI[params[0]][P_NAME]);
-	SendClientMessageEx(params[0], -1, "{"GREY"}%s {"ORANGE"}te ha dado {"GREY"}%d SCORE.", PI[playerid][P_NAME], params[1]);
+	SendMessageEx(playerid, -1, "{"ORANGE"}Has given {"GREY"}%d SCORE {"ORANGE"}to {"GREY"}%s.", "{"ORANGE"}Has dado {"GREY"}%d SCORE {"ORANGE"}a {"GREY"}%s.", "{"ORANGE"}Deu {"GREY"}%d SCORE {"ORANGE"}a {"GREY"}%s.", params[1], PI[params[0]][P_NAME]);
+	SendMessageEx(params[0], -1, "{"GREY"}%s {"ORANGE"}has given you {"GREY"}%d SCORE.", "{"GREY"}%s {"ORANGE"}te ha dado {"GREY"}%d SCORE.", "{"GREY"}%s {"ORANGE"}te deu {"GREY"}%d SCORE.", PI[playerid][P_NAME], params[1]);
 	GivePlayerScoreEx(params[0], params[1]);
 	GivePlayerScoreEx(playerid, -params[1]);
 	
@@ -7171,6 +7320,7 @@ CMD:darscore(playerid, params[])
 	UsersLog(log);
 	return 1;
 }
+alias:darscore("darscore","givescore");
 
 CMD:reportar(playerid, params[])
 {
@@ -7187,6 +7337,7 @@ CMD:reportar(playerid, params[])
 	SendMessageToAdmins(-1, str);
 	return 1;
 }
+alias:reportar("report","complain");
 
 CMD:ejoin(playerid, params[])
 {
@@ -7194,7 +7345,7 @@ CMD:ejoin(playerid, params[])
 	if(PI[playerid][P_JOINED_EVENT]) return SendMessage(playerid, -1, "{"ORANGE"}You are already attached to the event, use {"GREY"}/salir {"ORANGE"}to leave the event.", "{"ORANGE"}Ya estás unido al evento, usa {"GREY"}/salir {"ORANGE"}para no entrar al evento.", "{"ORANGE"}Você já está ligado ao evento, use {"GREY"}/salir {"ORANGE"}para sair.");
 	PI[playerid][P_JOINED_EVENT] = true;
 	TOTAL_PLAYERS_EVENT += 1;
-	SendMessage(playerid, -1, "{999900}You have registered for the event, wait until it starts. To not enter the event, use /salir.", "{999900}Te has inscrito al evento, espera a que comience. Para no entrar al evento usa /salir.", "{999900}Você se registrou no evento, espere até que ele comece. Para não entrar no evento, use /salir.");
+	SendMessage(playerid, -1, "{999900}You have registered for the event, wait until it starts. To not enter the event, use /leave.", "{999900}Te has inscrito al evento, espera a que comience. Para no entrar al evento usa /salir.", "{999900}Você se registrou no evento, espere até que ele comece. Para não entrar no evento, use /sair.");
 	return 1;
 }
 
@@ -7209,7 +7360,12 @@ CMD:salir(playerid, params[])
 	}
 	if(PI[playerid][P_DESMADRE])
 	{
-		cmd_lv(playerid, "");
+		SetPlayerPosEx(playerid, 2020.1384, 1545.1157, 10.8930, 270.0000, 0, 0, 0, 0, 0, 1);
+		SetCameraBehindPlayer(playerid);
+		GameTextForPlayer(playerid, "Las Venturas", 3000, 6);
+
+		new str[80]; format(str, sizeof str, "~n~~g~~h~_%s~b~~h~_fue_a~p~_/lv~n~_", PI[playerid][P_NAME]);
+		ShowTextDrawInfo(3000, str);
 		return 1;
 	}
 	if(PI[playerid][P_GAMEMODE] != M_FREEROAM)
@@ -7221,6 +7377,7 @@ CMD:salir(playerid, params[])
 	SendMessage(playerid, -1, "{"GREY"}You may not use this command right now. To change mode use /m.", "{"GREY"}Ahora no puedes usar este comando, para cambiar de modo usa /m.", "{"GREY"}Agora você não pode usar este comando, para mudar o modo /m.");
 	return 1;
 }
+alias:salir("leave","sair");
 
 CMD:tops(playerid, params[])
 {
@@ -7228,27 +7385,22 @@ CMD:tops(playerid, params[])
 	ShowDialog(playerid, DIALOG_TOPS);
 	return 1;
 }
+alias:tops("top");
 
-CMD:top(playerid, params[])
-{
-	return cmd_tops(playerid, params);
-}
+
 
 /*
 select ID, NAME, SCORE, (select count(*) from USERS b  where a.SCORE <= b.SCORE) as cnt
 from USERS a WHERE NAME = "Facuu_"	
 */
-
-/*CMD:stats(playerid, params[])
+/*
+CMD:stats(playerid, params[])
 {
 	ShowDialog(playerid, DIALOG_STATS);
 	return 1;
 }*/
+alias:stats("estadisticas","estatística","statistics");
 
-CMD:estadisticas(playerid, params[])
-{
-	return cmd_stats(playerid, params);
-}
 
 CMD:estilo(playerid, params[])
 {
@@ -7361,7 +7513,7 @@ CMD:givevip(playerid, params[])
 			
 			if(IsValidDynamic3DTextLabel(PI[params[0]][P_VIP_LABEL])) DestroyDynamic3DTextLabel(PI[params[0]][P_VIP_LABEL]);
 			PI[params[0]][P_VIP_LABEL] = CreateDynamic3DTextLabel("Usuario VIP", 0xFFCC00AA, 0.0, 0.0, 0.3, 10.0, params[0]);
-			SendClientMessageEx(params[0], -1, "{C6D855}Has recibido membresía VIP por %d días (/vipinfo)", params[1]);
+			SendMessageEx(params[0], -1, "{C6D855}Has received a VIP membership for %d days (/vipinfo)", "{C6D855}Has recibido membresía VIP por %d días (/vipinfo)", "{C6D855}Recebeu uma assinatura VIP por %d dias (/vipinfo)", params[1]);
 			SendMessage(playerid, -1, "{99CC00}Alright.", "{99CC00}OK.", "{99CC00}OK.");
 		}
 		
@@ -7470,7 +7622,7 @@ CMD:setscore(playerid, params[])
 	if(sscanf(params, "ud", params[0], params[1])) return SendMessage(playerid, -1, "{996600}ERROR: /setscore [PlayerID/Name] [SCORE]", "{996600}ERROR: /setscore [PlayerID/Nombre] [SCORE]", "{996600}ERROR: /setscore [PlayerID/Nome] [SCORE]");
 	if(!IsPlayerConnected(params[0])) return SendMessage(playerid, -1, "{CCCCCC}Error: Player disconnected.", "{CCCCCC}Error: Jugador desconectado.", "{CCCCCC}Error: Jogador desconectado.");
 
-	SendClientMessageEx(params[0], -1, "{"ORANGE"}Tu score ahora es {"GREY"}%d SCORE.", params[1]);
+	SendMessageEx(params[0], -1, "{"ORANGE"}Your score now is {"GREY"}%d SCORE.", "{"ORANGE"}Tu score ahora es {"GREY"}%d SCORE.", "{"ORANGE"}Sua pontuação é agora {"GREY"}%d SCORE.", params[1]);
 	PI[params[0]][P_SCORE] = params[1];
 	SetPlayerScore(params[0], PI[params[0]][P_SCORE]);
 	UpdateUserDataField(params[0], "SCORE", PI[params[0]][P_SCORE]);
@@ -7483,7 +7635,7 @@ CMD:setmoney(playerid, params[])
 	if(sscanf(params, "ud", params[0], params[1])) return SendMessage(playerid, -1, "{996600}ERROR: /setmoney [PlayerID/Name] [SCORE]", "{996600}ERROR: /setmoney [PlayerID/Nombre] [SCORE]", "{996600}ERROR: /setmoney [PlayerID/Nome] [SCORE]");
 	if(!IsPlayerConnected(params[0])) return SendMessage(playerid, -1, "{CCCCCC}Error: Player disconnected.", "{CCCCCC}Error: Jugador desconectado.", "{CCCCCC}Error: Jogador desconectado.");
 
-	SendClientMessageEx(params[0], -1, "{"ORANGE"}Tu dinero ahora es {"GREY"}%d$.", params[1]);
+	SendMessageEx(params[0], -1, "{"ORANGE"}Your money is now {"GREY"}%d$.", "{"ORANGE"}Tu dinero ahora es {"GREY"}%d$.", "{"ORANGE"}Seu dinheiro é agora {"GREY"}%d$.", params[1]);
 	PI[params[0]][P_MONEY] = params[1];
 	ResetPlayerMoney(params[0]);
 	GivePlayerMoney(params[0], PI[params[0]][P_MONEY]);
@@ -7569,7 +7721,7 @@ CMD:rac(playerid, params[])
 				LinkVehicleToInterior(v, 0);
 			}
 		}
-		SendClientMessageToAll(-1, "{"ORANGE"}Todos los vehículos fueron respawneados.");
+		SendMessageToAll(-1, "{"ORANGE"}All veicles have been respawned.", "{"ORANGE"}Todos los vehículos fueron respawneados.", "{"ORANGE"}Todos os veículos foram respawneados.");
 		return 1;
 	}
 	return 0;
@@ -7583,7 +7735,7 @@ CMD:givemod(playerid, params[])
 		if(!IsPlayerConnected(params[0])) return SendMessage(playerid, -1, "{996600}ERROR: /givemod [PLAYERID] [LEVEL]", "{996600}ERROR: /givemod [PLAYERID] [LEVEL]", "{996600}ERROR: /givemod [PLAYERID] [LEVEL]");
 		if(PI[playerid][P_MOD] == ADMIN_LEVEL_LEADER) if(params[1] > ADMIN_LEVEL_BAN) return SendMessage(playerid, -1, "Error: You can not assign this level.", "Error: No puedes asignar este nivel.", "Error: Você não pode atribuir este nível.");
 		else if(PI[playerid][P_MOD] == ADMIN_LEVEL_OWNER) if(params[1] > ADMIN_LEVEL_OWNER) return SendMessage(playerid, -1, "Error.", "Error.", "Error.");
-		SendClientMessageEx(playerid, -1, "{CCCCCC}Has modificado el rango a {B0E66A}%s {CCCCCC}de %s.", adminLevel(params[1]), PI[params[0]][P_NAME]);
+		SendMessageEx(playerid, -1, "{CCCCCC}Has changed the rank {B0E66A}%s {CCCCCC}of %s.", "{CCCCCC}Has modificado el rango a {B0E66A}%s {CCCCCC}de %s.", "{CCCCCC}Você modificou o nivel para {B0E66A}%s {CCCCCC}de %s.", adminLevel(params[1]), PI[params[0]][P_NAME]);
 		ChangeAdminRank(PI[params[0]][P_ID], params[1]);
 		return 1;
 	}
@@ -7601,7 +7753,7 @@ CMD:kroom(playerid, params[])
 		ExitPlayerGameMode(params[0]);
 		JoinPlayerGameMode(params[0], GAME_FREEROAM);
 		
-		SendClientMessageEx(playerid, -1, "'%s' ahora está en el modo FREEROAM.", PI[params[0]][P_NAME]);
+		SendMessageEx(playerid, -1, "'%s' changed his mode to FREEROAM.", "'%s' ahora está en el modo FREEROAM.", "'%s' agora está no modo FREEROAM.", PI[params[0]][P_NAME]);
 		return 1;
 	}
 	return 0;
@@ -7788,9 +7940,9 @@ CMD:getid(playerid, params[])
 		if(db_num_rows(Result))
 		{
 			db_get_field_assoc(Result, "NAME", name, 24);
-			SendClientMessageEx(playerid, -1, "Resultado: Nombre: '%s' DB-ID: '%d' Connected: '%d' Player_ID: '%d'", name, db_get_field_assoc_int(Result, "ID"), db_get_field_assoc_int(Result, "CONNECTED"), db_get_field_assoc_int(Result, "PLAYERID"));
+			SendMessageEx(playerid, -1, "Result: Name: '%s' DB-ID: '%d' Connected: '%d' Player_ID: '%d'", "Resultado: Nombre: '%s' DB-ID: '%d' Connected: '%d' Player_ID: '%d'", "Resultado: Nome: '%s' DB-ID: '%d' Connectado: '%d' Player_ID: '%d'", name, db_get_field_assoc_int(Result, "ID"), db_get_field_assoc_int(Result, "CONNECTED"), db_get_field_assoc_int(Result, "PLAYERID"));
 		}
-		else SendClientMessageEx(playerid, -1, "{996600}ERROR: No se encontró '%s'.", params);
+		else SendMessageEx(playerid, -1, "{996600}ERROR: Not encountered '%s'.", "{996600}ERROR: No se encontró '%s'.", "{996600}ERROR: Não foi possível encontrar '%s'.", params);
 		
 		db_free_result(Result);
 		return 1;
@@ -7820,7 +7972,7 @@ CMD:setpass(playerid, params[])
 			c_id = db_get_field_int(Result, 1);
 			db_get_field(Result, 2, player_name, 24);
 			
-			SendClientMessageEx(playerid, -1, "Has cambiado la contraseña de %s", player_name);
+			SendMessageEx(playerid, -1, "You have changed the password %s", "Has cambiado la contraseña de %s", "Você mudou a senha %s", player_name);
 		}
 		else SendMessage(playerid, -1, "{996600}ERROR: Db player ID does not exist.", "{996600}ERROR: Db player ID no existe.", "{996600}ERROR: O ID do reprodutor de banco de dados não existe.");
 		
@@ -7829,7 +7981,7 @@ CMD:setpass(playerid, params[])
 		if(connected)
 		{
 			PI[playerid][P_PASS] = pass;
-			SendClientMessageEx(c_id, -1, "{99CC00}Tu contraseña se ha modificado.", PI[c_id][P_NAME]);
+			SendMessageEx(c_id, -1, "{99CC00}Your password has been modified", "{99CC00}Tu contraseña se ha modificado.", "{99CC00}Sua senha foi modificada.", PI[c_id][P_NAME]);
 		}
 		
 		return 1;
@@ -7885,7 +8037,7 @@ CMD:premove(playerid, params[])
 		if(db_num_rows(Result))
 		{
 			db_get_field(Result, 0, song_title, 32);
-			SendClientMessageEx(playerid, -1, "{CCCCCC}Canción {90C3D4}'%s' {CCCCCC}eliminada.", song_title);
+			SendMessageEx(playerid, -1, "{CCCCCC}Song {90C3D4}'%s' {CCCCCC} removed.", "{CCCCCC}Canción {90C3D4}'%s' {CCCCCC}eliminada.", "{CCCCCC}Canção {90C3D4}'%s' {CCCCCC} removida.", song_title);
 			DeleteSocialSong(params[0]);
 		}
 		else SendMessage(playerid, -1, "{CCCCCC}Song not found.", "{CCCCCC}Canción no encontrada.", "{CCCCCC}Canção não encontrada.");
@@ -7909,7 +8061,7 @@ CMD:pplays(playerid, params[])
 		if(db_num_rows(Result))
 		{
 			db_get_field(Result, 0, song_title, 32);
-			SendClientMessageEx(playerid, -1, "{CCCCCC}Canción {90C3D4}'%s' {CCCCCC}set plays = '%d'.", song_title, params[1]);
+			SendMessageEx(playerid, -1, "{CCCCCC}Playback of {90C3D4}'%s' {CCCCCC}has started = '%d'.", "{CCCCCC}Canción {90C3D4}'%s' {CCCCCC}set plays = '%d'.", "{CCCCCC}Canção {90C3D4}'%s' {CCCCCC} está reproduzido = '%d'.", song_title, params[1]);
 			new str[80]; format(str, sizeof(str), "UPDATE MUSIC SET PLAYS = %d WHERE ID = '%d'", params[1], params[0]);
 			db_query(Database, str);
 		}
@@ -7933,9 +8085,9 @@ CMD:delete(playerid, params[])
 		if(db_num_rows(Result))
 		{
 			DeletePlayer(db_get_field_int(Result, 0));
-			SendClientMessageEx(playerid, -1, "{C6D855}'%s' eliminado.", name);
+			SendMessageEx(playerid, -1, "{C6D855}'%s' removed.", "{C6D855}'%s' eliminado.", "{C6D855}'%s' eliminado.", name);
 		}
-		else SendClientMessageEx(playerid, -1, "{CC0000}ERROR: '%s' no encontrado en la base de datos.", name);
+		else SendMessageEx(playerid, -1, "{CC0000}ERROR: '%s' not encountered in the database.", "{CC0000}ERROR: '%s' no encontrado en la base de datos.", "{CC0000}ERROR: '%s' não encontrado no banco de dados.", name);
 		db_free_result(Result);
 		
 		return 1;
@@ -7992,13 +8144,13 @@ CMD:unban(playerid, params[])
 					format(str, 64, " WHERE NAME = '%s'", name); strcat(DB_Query, str);
 					db_query(Database, DB_Query);
 					
-					SendClientMessageEx(playerid, -1, "{99CC00}'%s' desbaneado.", name);
+					SendMessageEx(playerid, -1, "{99CC00}'%s' unbanned.", "{99CC00}'%s' desbaneado.", "{99CC00}'%s' desbaneado.", name);
 					
 					new log[145]; format(log, 145, "%s [ID:%d LVL:%d] desbaneó a %s [ID:%d]", PI[playerid][P_NAME], PI[playerid][P_ID], PI[playerid][P_MOD], name, pid);
 					AdminLog(log);
 					
 				}
-				else SendClientMessageEx(playerid, -1, "{99CC00}'%s' no está baneado.", name);
+				else SendMessageEx(playerid, -1, "{99CC00}'%s' is not banned.", "{99CC00}'%s' no está baneado.", "{99CC00}'%s' não está baneado.", name);
 			}
 			else
 			{
@@ -8014,10 +8166,10 @@ CMD:unban(playerid, params[])
 					SendRconCommand(str);
 					UnBlockIpAddress(pip);
 				}
-				SendClientMessageEx(playerid, -1, "{99CC00}'%s' desbaneado.", name);
+				SendMessageEx(playerid, -1, "{99CC00}'%s' unbanned.", "{99CC00}'%s' desbaneado.", "{99CC00}'%s' desbaneado.", name);
 			}
 		}
-		else SendClientMessageEx(playerid, -1, "{CC0000}ERROR: '%s' no encontrado en la base de datos.", name);
+		else SendMessageEx(playerid, -1, "{CC0000}ERROR: '%s' not encountered in the database.", "{CC0000}ERROR: '%s' no encontrado en la base de datos.", "{CC0000}ERROR: '%s' não encontrado no banco de dados.", name);
 		db_free_result(Result);
 		
 		return 1;
@@ -8051,9 +8203,9 @@ CMD:bandb(playerid, params[])
 				SendRconCommand(str);
 				BlockIpAddress(pip, 0);
 			}
-			SendClientMessageEx(playerid, -1, "{99CC00}'%s' baneado.", name);
+			SendMessageEx(playerid, -1, "{99CC00}'%s' banned.", "{99CC00}'%s' baneado.", "{99CC00}'%s' baneado.", name);
 		}
-		else SendClientMessageEx(playerid, -1, "{CC0000}ERROR: '%s' no encontrado en la base de datos.", name);
+		else SendMessageEx(playerid, -1, "{CC0000}ERROR: '%s' not encountered in the database.", "{CC0000}ERROR: '%s' no encontrado en la base de datos.", "{CC0000}ERROR: '%s' não encontrado no banco de dados.", name);
 		db_free_result(Result);
 		
 		return 1;
@@ -8301,7 +8453,7 @@ CMD:skin(playerid, params[])
 
 CMD:gskin(playerid, params[])
 {
-	SendClientMessageEx(playerid, -1, "{FFCC00}Skin ID actual: %d", GetPlayerSkin(playerid));
+	SendMessageEx(playerid, -1, "{FFCC00}Current skin ID: %d", "{FFCC00}Skin ID actual: %d", "{FFCC00}Pele ID actual: %d", GetPlayerSkin(playerid));
 	return 1;
 }
 
@@ -8345,7 +8497,7 @@ CMD:givemoney(playerid, params[])
 		if(sscanf(params, "ud", params[0], params[1])) return SendMessage(playerid, -1, "{996600}ERROR: /givemoney [PlayerID/Name] [Value]", "{996600}ERROR: /givemoney [PlayerID/Nombre] [Montón]", "{996600}ERROR: /givemoney [PlayerID/Nome] [Valor]");
 		if(!IsPlayerConnected(params[0])) return SendMessage(playerid, -1, "{CCCCCC}Error: Player disconnected.", "{CCCCCC}Error: Jugador desconectado.", "{CCCCCC}Error: Jogador desconectado.");
 		
-		SendClientMessageEx(params[0], -1, "{"ORANGE"}Un administrador te dio {"GREY"}$%d.", params[1]);
+		SendMessageEx(params[0], -1, "{"ORANGE"}An administrator has given you {"GREY"}$%d.", "{"ORANGE"}Un administrador te dio {"GREY"}$%d.", "{"ORANGE"}Um administrador te deu {"GREY"}$%d.", params[1]);
 		GivePlayerMoneyEx(params[0], params[1]);
 		return 1;
 	}
@@ -8359,7 +8511,7 @@ CMD:givescore(playerid, params[])
 		if(sscanf(params, "ud", params[0], params[1])) return SendMessage(playerid, -1, "{996600}ERROR: /givescore [PlayerID/Name] [Value]", "{996600}ERROR: /givescore [PlayerID/Nombre] [Montón]", "{996600}ERROR: /givescore [PlayerID/Nome] [Valor]");
 		if(!IsPlayerConnected(params[0])) return SendMessage(playerid, -1, "{CCCCCC}Error: Player disconnected.", "{CCCCCC}Error: Jugador desconectado.", "{CCCCCC}Error: Jogador desconectado.");
 		
-		SendClientMessageEx(params[0], -1, "{"ORANGE"}Un administrador te dio {"GREY"}%d SCORE.", params[1]);
+		SendMessageEx(params[0], -1, "{"ORANGE"}An administrator has given you {"GREY"}%d SCORE.", "{"ORANGE"}Un administrador te dio {"GREY"}%d SCORE.", "{"ORANGE"}Um administrador te deu {"GREY"}%d SCORE.", params[1]);
 		GivePlayerScoreEx(params[0], params[1]);
 		return 1;
 	}
@@ -8390,7 +8542,7 @@ CMD:gid(playerid, params[])
 		{
 			SendClientMessageEx(playerid, -1, "%s [%d]", name, db_get_field_int(Result, 0));
 		}
-		else SendClientMessageEx(playerid, -1, "{CC0000}ERROR: '%s' no encontrado en la base de datos.", name);
+		else SendMessageEx(playerid, -1, "{CC0000}ERROR: '%s' not encountered in the database.", "{CC0000}ERROR: '%s' no encontrado en la base de datos.", "{CC0000}ERROR: '%s' não encontrado no banco de dados.", name);
 		db_free_result(Result);
 		return 1;
 	}
@@ -8710,7 +8862,7 @@ CMD:conteo(playerid, params[])
 	if(gettime() < COUNTDOWN_TIME + 60) 
 	{
 		new time = (60 - ( gettime() - COUNTDOWN_TIME ) );
-		SendClientMessageEx(playerid, -1, "{"ORANGE"}Debes de esperar {"GREY"}%s minutos {"ORANGE"}para iniciar otro conteo.", TimeConvert(time));
+		SendMessageEx(playerid, -1, "{"ORANGE"}You may wait {"GREY"}%s minutes {"ORANGE"}to start another countdown.", "{"ORANGE"}Debes de esperar {"GREY"}%s minutos {"ORANGE"}para iniciar otro conteo.", "{"ORANGE"}Deve esperar {"GREY"}%s minutos {"ORANGE"}para iniciar outra contagem regressiva.", TimeConvert(time));
 		return 1;
 	}
 	
@@ -8720,7 +8872,7 @@ CMD:conteo(playerid, params[])
 	Countdown();
 	return 1;
 }
-
+alias:conteo("countdown");
 public Countdown()
 {
 	if(COUNTDOWN_COUNTER <= 0)
@@ -8756,7 +8908,7 @@ CMD:crearcrew(playerid, params[])
 	if(db_num_rows(Result)) exists = true;
 	db_free_result(Result);
 	
-	if(exists) return SendClientMessageEx(playerid, -1, "Crew {FF7A45}%s {FFFFFF}ya existe, elige otro nombre para tu crew.", params);
+	if(exists) return SendMessageEx(playerid, -1, "Crew {FF7A45}%s {FFFFFF}already exists, choose another name for your crew.", "Crew {FF7A45}%s {FFFFFF}ya existe, elige otro nombre para tu crew.", "Crew {FF7A45}%s {FFFFFF}já existe, escolha outro nome para sua tripulação.", params);
 	format(DB_Query, sizeof(DB_Query), "INSERT INTO CREWS (NAME, MEMBERS) VALUES ('%s','1')", params);
 	db_query(Database, DB_Query);
 
@@ -8786,7 +8938,7 @@ CMD:crearcrew(playerid, params[])
 	
 	GivePlayerScoreEx(playerid, -1000);
 	GivePlayerMoneyEx(playerid, -500000);
-	SendClientMessageEx(playerid, -1, "Crew {FF7A45}%s {FFFFFF}creada, usa {FF7A45}/manage {FFFFFF}para gestionar tu crew.", params);
+	SendMessageEx(playerid, -1, "Crew {FF7A45}%s {FFFFFF}established, use {FF7A45}/manage {FFFFFF}to manage your crew.", "Crew {FF7A45}%s {FFFFFF}creada, usa {FF7A45}/manage {FFFFFF}para gestionar tu crew.", "Crew {FF7A45}%s {FFFFFF}criada, usa {FF7A45}/manage {FFFFFF}para gerenciar sua tripulação.", params);
 	return 1;
 }
 
@@ -8808,8 +8960,8 @@ CMD:invitar(playerid, params[])
 	if(PI[params[0]][P_CREW_ID] != 0) return SendMessage(playerid, -1, "Error: The player must leave his current crew before.", "Error: El jugador debe abandonar antes su crew actual.", "Error: O jogador deve deixar sua equipe atual de antemão.");
 	PI[params[0]][P_CREW_INVITED] = PI[playerid][P_CREW_ID];
 	PI[params[0]][P_CREW_INVITE_TIME] = gettime();
-	SendClientMessageEx(playerid, -1, "Invitación enviada a {%x}%s.", CI[PI[playerid][P_CREW_SLOT]][C_COLOR], PI[params[0]][P_NAME]);
-	SendClientMessageEx(params[0], -1, "{%x}%s {FFFFFF}te ha invitado a unirte a la crew {%x}%s. {FFFFFF}Usa {%x}/aceptar {FFFFFF}para unirte.", CI[PI[playerid][P_CREW_SLOT]][C_COLOR], PI[playerid][P_NAME], CI[PI[playerid][P_CREW_SLOT]][C_COLOR], CI[PI[playerid][P_CREW_SLOT]][C_NAME], CI[PI[playerid][P_CREW_SLOT]][C_COLOR]);
+	SendMessageEx(playerid, -1, "Invitation sent to {%x}%s.", "Invitación enviada a {%x}%s.", "Convite enviado para {%x}%s.", CI[PI[playerid][P_CREW_SLOT]][C_COLOR], PI[params[0]][P_NAME]);
+	SendMessageEx(params[0], -1, "{%x}%s {FFFFFF}has sent you a request to join their crew {%x}%s. {FFFFFF}Use {%x}/accept {FFFFFF}to join.", "{%x}%s {FFFFFF}te ha invitado a unirte a la crew {%x}%s. {FFFFFF}Usa {%x}/aceptar {FFFFFF}para unirte.", "{%x}%s {FFFFFF}convidou você para se juntar à tripulação {%x}%s. {FFFFFF}Usa {%x}/aceptar {FFFFFF}para participar.", CI[PI[playerid][P_CREW_SLOT]][C_COLOR], PI[playerid][P_NAME], CI[PI[playerid][P_CREW_SLOT]][C_COLOR], CI[PI[playerid][P_CREW_SLOT]][C_NAME], CI[PI[playerid][P_CREW_SLOT]][C_COLOR]);
 	PlayerPlaySoundEx(params[0], 5203, 0.0, 0.0, 0.0);
 	return 1;
 }
@@ -8844,8 +8996,8 @@ CMD:aceptar(playerid, params)
 	SendMessageToCrew(PI[playerid][P_CREW_ID], -1, message);
 	return 1;
 }
-
-public OnPlayerCommandReceived(playerid, cmdtext[])
+alias:aceptar("accept");
+public OnPlayerCommandReceived(playerid, cmd[], params[], flags)
 {
 	if(PI[playerid][P_STATUS] != S_SPAWNED)
 	{
@@ -8855,9 +9007,9 @@ public OnPlayerCommandReceived(playerid, cmdtext[])
 	return 1;
 }
 
-public OnPlayerCommandPerformed(playerid, cmdtext[], success)
+public OnPlayerCommandPerformed(playerid, cmd[], params[], result, flags)
 {
-	if(!success) GameTextForPlayer(playerid, "_~n~_~n~_~n~_~n~_~n~_~n~_~n~_~n~~r~~h~comando incorrecto~n~~y~~h~/ayuda_/comandos_/teles", 3000, 6);
+	if(!result) GameTextForPlayer(playerid, "_~n~_~n~_~n~_~n~_~n~_~n~_~n~_~n~~r~~h~comando incorrecto~n~~y~~h~/ayuda_/comandos_/teles", 3000, 6);
 	return 1;
 }
 
@@ -27370,9 +27522,9 @@ UpdateUserData(playerid, disconnect = 0)
 	return 1;
 }
 
+
 SendClientMessageEx(playerid, color, form[], {Float, _}: ...) {
 	#pragma unused form
-
 	static
 	tmp[145]
 	;
@@ -27391,9 +27543,10 @@ SendClientMessageEx(playerid, color, form[], {Float, _}: ...) {
 	#emit stack n4
 	#emit sysreq.c format
 	#emit stack n16
-
 	return (t1 == -1 ? (SendClientMessageToAll(t2, tmp)) : (SendClientMessage(t1, t2, tmp)) );
 }
+
+
 
 
 
@@ -28369,21 +28522,21 @@ public OnDialogResponse(playerid, dialogid, response, listitem, inputtext[])
 				case 0: //English
 					{
 						player_Language[playerid] = LANGUAGE_ENGLISH;
-						ShowPlayerDialog(playerid, DIALOG_LANGUAGE_SUCCESS, DIALOG_STYLE_MSGBOX, ""#CYAN"You have successfully set your language!", ""#WHITE"Your account has been set to "#CYAN"english!\n"#WHITE"If you wish to change this, type "#CYAN"/changelanguage "#WHITE"at any time.", "OK", "");
+						ShowPlayerDialog(playerid, DIALOG_LANGUAGE_SUCCESS, DIALOG_STYLE_MSGBOX, "You have successfully set your language!", "Your account has been set to english!\nIf you wish to change this, type /changelanguage at any time.", "OK", "");
 					}
 				case 1:
 					{
 						player_Language[playerid] = LANGUAGE_SPANISH;
-						ShowPlayerDialog(playerid, DIALOG_LANGUAGE_SUCCESS, DIALOG_STYLE_MSGBOX, ""#CYAN"Ha configurado correctamente su idioma!", ""#WHITE"Su cuenta ha sido establecido en "#CYAN"inglés!\n"#WHITE"Si desea cambiar esta "#CYAN"/changelanguage "#WHITE"el tipo en cualquier momento.", "Bueno", "");
+						ShowPlayerDialog(playerid, DIALOG_LANGUAGE_SUCCESS, DIALOG_STYLE_MSGBOX, "Ha configurado correctamente su idioma!", "Su cuenta ha sido establecido en inglés!\nSi desea cambiar esta /changelanguage el tipo en cualquier momento.", "Bueno", "");
 					}
 				case 2:
 					{
 						player_Language[playerid] = LANGUAGE_PORTUGUESE;
-						ShowPlayerDialog(playerid, DIALOG_LANGUAGE_SUCCESS, DIALOG_STYLE_MSGBOX, ""#CYAN"Ha configurado corretamente su idioma!", ""#WHITE"Sua conta foi estabelecida em "#CYAN"portugues!\n"#WHITE"Se você quiser mudar isso "#CYAN"/changelanguage "#WHITE"a lingua em qualquer momento.", "Tudo bem", "");
+						ShowPlayerDialog(playerid, DIALOG_LANGUAGE_SUCCESS, DIALOG_STYLE_MSGBOX, "Ha configurado corretamente su idioma!", "Sua conta foi estabelecida em portugues!\nSe você quiser mudar isso /changelanguage a lingua em qualquer momento.", "Tudo bem", "");
 					}
 				}
 			}
-			else return ShowPlayerDialog(playerid, DIALOG_LANGUAGE, DIALOG_STYLE_LIST, ""#CYAN"Select your language "#WHITE"(Seleccione su idioma)", LANGUAGE_SELECTION, "OK", ""); //If they hit ESC while on the dialog (trying to bug the system?)
+			else return ShowPlayerDialog(playerid, DIALOG_LANGUAGE, DIALOG_STYLE_LIST, "Select your language (Seleccione su idioma)", LANGUAGE_SELECTION, "OK", ""); //If they hit ESC while on the dialog (trying to bug the system?)
 		}
 	case DIALOG_HELP1:
 		{
@@ -28408,7 +28561,7 @@ public OnDialogResponse(playerid, dialogid, response, listitem, inputtext[])
 			{
 				if(udb_hash(inputtext) == PI[playerid][P_PASS])
 				{
-					SendClientMessageEx(-1, -1, "{B0E66A}%s {CCCCCC}ha entrado al servidor", PI[playerid][P_NAME]);
+					SendMessageEx(-1, -1, "{B0E66A}%s {CCCCCC}has joined the server", "{B0E66A}%s {CCCCCC}ha entrado al servidor", "{B0E66A}%s {CCCCCC}entrou no servidor", PI[playerid][P_NAME]);
 					LoadPlayerData(playerid);
 					
 					if(PI[playerid][P_VIP])
@@ -28647,7 +28800,7 @@ public OnDialogResponse(playerid, dialogid, response, listitem, inputtext[])
 						if(db_num_rows(Result)) song_id = db_get_field_int(Result, 0);
 						db_free_result(Result);
 						
-						SendClientMessageEx(playerid, -1, "{CCCCCC}Canción {90C3D4}'%s' {CCFF00}(/play %d) {CCCCCC}añadida, puedes editarla desde mis canciones publicadas.", PI[playerid][P_MUSIC_TITLE], song_id);
+						SendMessageEx(playerid, -1, "{CCCCCC}Song {90C3D4} '%s' {CCFF00} (/play %d) {CCCCCC} added, you can edit it from my published songs.", "{CCCCCC}Canción {90C3D4}'%s' {CCFF00}(/play %d) {CCCCCC}añadida, puedes editarla desde mis canciones publicadas.", "{CCCCCC}Canção {90C3D4}'%s' {CCFF00} (/play %d) {CCCCCC} adicionado, você pode editá-lo das minhas músicas publicadas.", PI[playerid][P_MUSIC_TITLE], song_id);
 						//SendClientMessageEx(playerid, -1, "{CCCCCC}Usa {CCFF00}/play %d {CCCCCC}para reproducir la canción que acabas de añadir.", song_id);
 						//ShowDialog(playerid, DIALOG_SOCIAL_MUSIC);
 					}
@@ -28660,7 +28813,7 @@ public OnDialogResponse(playerid, dialogid, response, listitem, inputtext[])
 						strdel(url, strlen(url) - 3, strlen(url));
 						strins(url, "...", strlen(url));
 						
-						SendClientMessageEx(playerid, -1, "{CCCCCC}Reproduciendo {90C3D4}'%s (%s)'", PI[playerid][P_MUSIC_TITLE], url);
+						SendMessageEx(playerid, -1, "{CCCCCC}Starting playback of {90C3D4}'%s (%s)'", "{CCCCCC}Reproduciendo {90C3D4}'%s (%s)'", "{CCCCCC}Reproduzindo {90C3D4}'%s (%s)'", PI[playerid][P_MUSIC_TITLE], url);
 						ShowDialog(playerid, DIALOG_SOCIAL_ADD);
 					}
 				}
@@ -30415,7 +30568,7 @@ public OnDialogResponse(playerid, dialogid, response, listitem, inputtext[])
 			{
 				format(PI[c_id][P_NAME], 24, "%s", PI[playerid][P_PLAYER_SELECTED_NAME]);
 				SetPlayerName(c_id, PI[c_id][P_NAME]);
-				SendClientMessageEx(c_id, -1, "{99CC00}Un administrador cambió tu nombre a {999900}'%s'", PI[c_id][P_NAME]);
+				SendMessageEx(c_id, -1, "{99CC00}An administrator changed your name to {999900}'%s'", "{99CC00}Un administrador cambió tu nombre a {999900}'%s'", "{99CC00}Um administrador mudou seu nome para {999900}'%s'", PI[c_id][P_NAME]);
 			}
 			
 			SendMessage(playerid, -1, "{CCCCCC}You have changed the name of this user.", "{CCCCCC}Has cambiado el nombre de este usuario.", "{CCCCCC}Você mudou o nome deste usuário.");
@@ -30570,10 +30723,10 @@ FinishDuel(duel_id, winner, loser)
 	
 	GivePlayerMoneyEx(winner, DLI[duel_id][DL_BET] * 2);
 	GameTextForPlayer(winner, "~n~~n~~n~~n~~g~~h~~h~ganador", 3000, 4);
-	SendClientMessageEx(winner, -1, "{99CC00}Dinero ganado en apuestas: %d$.", DLI[duel_id][DL_BET]);
+	SendMessageEx(winner, -1, "{99CC00}Money earned on bets: %d$.", "{99CC00}Dinero ganado en apuestas: %d$.", "{99CC00}Dinheiro ganho em apostas: %d$.", DLI[duel_id][DL_BET]);
 	
 	GameTextForPlayer(loser, "~n~~n~~n~~n~~r~~h~perdedor", 3000, 4);
-	SendClientMessageEx(loser, -1, "{CC0000}Dinero perdido en apuestas: %d$.", DLI[duel_id][DL_BET]);
+	SendMessageEx(loser, -1, "{CC0000}Money lost in bets: %d$.", "{CC0000}Dinero perdido en apuestas: %d$.", "{CC0000}Dinheiro perdido em apostas: %d$.", DLI[duel_id][DL_BET]);
 	return 1;
 }
 
@@ -30595,7 +30748,7 @@ ChangeAdminRank(id, rank)
 	if(connected)
 	{
 		PI[c_id][P_MOD] = rank;
-		SendClientMessageEx(c_id, -1, "{CCCCCC}Tu nivel de administrador ahora es {B0E66A}%s.", adminLevel(PI[c_id][P_MOD]));
+		SendMessageEx(c_id, -1, "{CCCCCC}Your level of administrator is now {B0E66A}%s.", "{CCCCCC}Tu nivel de administrador ahora es {B0E66A}%s.", "{CCCCCC}Seu nível de administrador é agora {B0E66A}%s.", adminLevel(PI[c_id][P_MOD]));
 	}
 	return 1;
 }
@@ -31370,7 +31523,7 @@ public NextRace()
 	RC[R_COUNTDOWN_COUNTER] = 11;
 	KillTimer(RC[R_COUNTDOWN_TIMER]);
 	RC[R_COUNTDOWN_TIMER] = SetTimer("RaceCountdown", 900, true);
-	SendClientMessageToAll(-1, "{99CC00}--> [CARRERA] va a comenzar en {"ORANGE"}10 segundos. {99CC00}Usa {"GREY"}/race {99CC00}para unirte.");
+	SendMessageToAll(-1, "{99CC00}--> [RACE] Will start in {"ORANGE"}10 seconds. {99CC00}Use {"GREY"}/race {99CC00}to join.", "{99CC00}--> [CARRERA] va a comenzar en {"ORANGE"}10 segundos. {99CC00}Usa {"GREY"}/race {99CC00}para unirte.", "{99CC00}--> [CORRIDA] Vai começar em {"ORANGE"}10 segundos. {99CC00}Usa {"GREY"}/race {99CC00}para participar.");
 	new str[64]; format(str, 64, "~g~~h~%s~n~~y~esperando_jugadores", RC[R_NAME]);
 	TextDrawSetString(TD_RACEMessage, str);
 	
@@ -31693,7 +31846,7 @@ public NextShooter()
 	ST[S_COUNTDOWN_COUNTER] = 11;
 	KillTimer(ST[S_COUNTDOWN_TIMER]);
 	ST[S_COUNTDOWN_TIMER] = SetTimer("ShooterCountdown", 900, true);
-	SendClientMessageToAll(-1, "{99CC00}--> [SHOOTER] va a comenzar en {"ORANGE"}10 segundos. {99CC00}Usa {"GREY"}/shooter {99CC00}para unirte.");
+	SendMessageToAll(-1, "{99CC00}--> [SHOOTER] Will start in {"ORANGE"}10 seconds. {99CC00}Use {"GREY"}/shooter {99CC00}to join.", "{99CC00}--> [SHOOTER] va a comenzar en {"ORANGE"}10 segundos. {99CC00}Usa {"GREY"}/shooter {99CC00}para unirte.", "{99CC00}--> [SHOOTER] Vai começar em {"ORANGE"}10 segundos. {99CC00}Usa {"GREY"}/shooter {99CC00}para participar.");
 	new str[64]; format(str, 64, "~g~~h~%s~n~~y~esperando_jugadores", ST[S_NAME]);
 	TextDrawSetString(TD_ShooterMessage, str);
 	
@@ -32379,7 +32532,7 @@ JoinPlayerGameMode(playerid, mode)
 				ST[S_COUNTDOWN_COUNTER] = 11;
 				KillTimer(ST[S_COUNTDOWN_TIMER]);
 				ST[S_COUNTDOWN_TIMER] = SetTimer("ShooterCountdown", 900, true);
-				SendClientMessageToAll(-1, "{99CC00}--> [SHOOTER] va a comenzar en {"ORANGE"}10 segundos. {99CC00}Usa {"GREY"}/shooter {99CC00}para unirte.");
+				SendMessageToAll(-1, "{99CC00}--> [SHOOTER] Will start in {"ORANGE"}10 seconds. {99CC00}Use {"GREY"}/shooter {99CC00}to join.", "{99CC00}--> [SHOOTER] va a comenzar en {"ORANGE"}10 segundos. {99CC00}Usa {"GREY"}/shooter {99CC00}para unirte.", "{99CC00}--> [SHOOTER] Vai começar em {"ORANGE"}10 segundos. {99CC00}Usa {"GREY"}/shooter {99CC00}para participar.");
 				new str[64]; format(str, 64, "~g~~h~%s~n~~y~esperando_jugadores", ST[S_NAME]);
 				TextDrawSetString(TD_ShooterMessage, str);
 				
@@ -32470,7 +32623,7 @@ JoinPlayerGameMode(playerid, mode)
 				RC[R_COUNTDOWN_COUNTER] = 11;
 				KillTimer(RC[R_COUNTDOWN_TIMER]);
 				RC[R_COUNTDOWN_TIMER] = SetTimer("RaceCountdown", 900, true);
-				SendClientMessageToAll(-1, "{99CC00}--> [CARRERA] va a comenzar en {"ORANGE"}10 segundos. {99CC00}Usa {"GREY"}/race {99CC00}para unirte.");
+				SendMessageToAll(-1, "{99CC00}--> [RACE] Will start in {"ORANGE"}10 seconds. {99CC00}Use {"GREY"}/race {99CC00}to join.", "{99CC00}--> [CARRERA] va a comenzar en {"ORANGE"}10 segundos. {99CC00}Usa {"GREY"}/race {99CC00}para unirte.", "{99CC00}--> [CORRIDA] Vai começar em {"ORANGE"}10 segundos. {99CC00}Usa {"GREY"}/race {99CC00}para participar.");
 				new str[64]; format(str, 64, "~g~~h~%s~n~~y~esperando_jugadores", RC[R_NAME]);
 				TextDrawSetString(TD_RACE_Collisions[3], "Con_contacto:_0~n~Sin_contacto:_0~n~_");
 				TextDrawSetString(TD_RACEMessage, str);
@@ -33126,7 +33279,7 @@ public NextFallStatus()
 			FI[F_COUNTDOWN_COUNTER] = 11;
 			KillTimer(FI[F_COUNTDOWN_TIMER]);
 			FI[F_COUNTDOWN_TIMER] = SetTimer("FallCountdown", 900, true);
-			SendClientMessageToAll(-1, "{99CC00}--> [NO CAIGAS] va a comenzar en {"ORANGE"}10 segundos. {99CC00}Usa {"GREY"}/fall {99CC00}para unirte.");
+			SendMessageToAll(-1, "{99CC00}--> [DON'T FALL] Will start in {"ORANGE"}10 seconds. {99CC00}Use {"GREY"}/fall {99CC00}to join.", "{99CC00}--> [NO CAIGAS] va a comenzar en {"ORANGE"}10 segundos. {99CC00}Usa {"GREY"}/fall {99CC00}para unirte.", "{99CC00}--> [NÃO CAIA] Vai começar em {"ORANGE"}10 segundos. {99CC00}Usa {"GREY"}/fall {99CC00}para participar.");
 			UpdatePlayersFallStatus();
 		}
 	case FALL_WAIT:
@@ -33168,7 +33321,7 @@ public NextFallStatus()
 			FI[F_COUNTDOWN_COUNTER] = 11;
 			KillTimer(FI[F_COUNTDOWN_TIMER]);
 			FI[F_COUNTDOWN_TIMER] = SetTimer("FallCountdown", 900, true);
-			SendClientMessageToAll(-1, "{99CC00}--> [NO CAIGAS] va a comenzar en {"ORANGE"}10 segundos. {99CC00}Usa {"GREY"}/fall {99CC00}para unirte.");
+			SendMessageToAll(-1, "{99CC00}--> [DON'T FALL] Will start in {"ORANGE"}10 seconds. {99CC00}Use {"GREY"}/fall {99CC00}to join.", "{99CC00}--> [NO CAIGAS] va a comenzar en {"ORANGE"}10 segundos. {99CC00}Usa {"GREY"}/fall {99CC00}para unirte.", "{99CC00}--> [NÃO CAIA] Vai começar em {"ORANGE"}10 segundos. {99CC00}Usa {"GREY"}/fall {99CC00}para participar.");
 			UpdatePlayersFallStatus();
 		}
 	}
@@ -33611,7 +33764,7 @@ public NextDerbyStatus()
 			DI[D_COUNTDOWN_COUNTER] = 11;
 			KillTimer(DI[D_COUNTDOWN_TIMER]);
 			DI[D_COUNTDOWN_TIMER] = SetTimer("DerbyCountdown", 900, true);
-			SendClientMessageToAll(-1, "{99CC00}--> [DERBY] va a comenzar en {"ORANGE"}10 segundos. {99CC00}Usa {"GREY"}/derby {99CC00}para unirte.");
+			SendMessageToAll(-1, "{99CC00}--> [DERBY] Will start in {"ORANGE"}10 seconds. {99CC00}Use {"GREY"}/derby {99CC00}to join.", "{99CC00}--> [DERBY] va a comenzar en {"ORANGE"}10 segundos. {99CC00}Usa {"GREY"}/derby {99CC00}para unirte.", "{99CC00}--> [DERBY] Vai a começar em {"ORANGE"}10 segundos. {99CC00}Usa {"GREY"}/derby {99CC00}para participar.");
 			UpdatePlayersDerbyStatus();
 		}
 	case DERBY_RUNNING:
@@ -33638,7 +33791,7 @@ public NextDerbyStatus()
 			DI[D_COUNTDOWN_COUNTER] = 11;
 			KillTimer(DI[D_COUNTDOWN_TIMER]);
 			DI[D_COUNTDOWN_TIMER] = SetTimer("DerbyCountdown", 900, true);
-			SendClientMessageToAll(-1, "{999900}--> [DERBY] va a comenzar en {"ORANGE"}10 segundos. {999900}Usa {"GREY"}/derby {999900}para unirte.");
+			SendMessageToAll(-1, "{99CC00}--> [DERBY] Will start in {"ORANGE"}10 seconds. {99CC00}Use {"GREY"}/derby {99CC00}to join.", "{99CC00}--> [DERBY] va a comenzar en {"ORANGE"}10 segundos. {99CC00}Usa {"GREY"}/derby {99CC00}para unirte.", "{99CC00}--> [DERBY] Vai a começar em {"ORANGE"}10 segundos. {99CC00}Usa {"GREY"}/derby {99CC00}para participar.");
 			UpdatePlayersDerbyStatus();
 		}
 	case DERBY_WAIT:
@@ -36516,7 +36669,22 @@ SetTimers()
 	return 1;
 }
 
-new RandomSERVERMesages[][] =
+new RandomSERVERMesagesLang0[][] =
+{
+	"     {EAFF63}« Información »   {C1FF63}Are you bored? Try one of our games, use the command {FFCC00} /m {99CC00} and play.",
+	"     {EAFF63}« Información »   {C1FF63}You need money? Kill or try to play our games, use {FFCC00}/m.",
+	"     {EAFF63}« Información »   {C1FF63}Buy a fantastic house! You'll find many by San Andreas.",
+	"     {EAFF63}« Información »   {C1FF63}Add us to favorites (IP: openknogle.eu:7777) to always play!",
+	"     {EAFF63}« Información »   {C1FF63}Need help? {FFCC00} /help.",
+	"     {EAFF63}« Información »   {C1FF63}Super FreeRoam continues in development, you can leave your suggestions in the group of fb.",
+	"     {EAFF63}« Información »   {C1FF63}Visit our official website {C6D855}("SERVER_WEB")",
+	"     {EAFF63}« Información »   {C1FF63}Remember that you can tune your vehicles and save them!",
+	"     {EAFF63}« Información »   {C1FF63}To buy a vehicle go to {C6D855}/conce.",
+	"     {EAFF63}« Información »   {C1FF63}Create your own crew / clan with {FF7A45}/crearcrew.",
+	"     {EAFF63}« Información »   {C1FF63}Recommend us to your friends!",
+	"     {EAFF63}« Información »   {C1FF63}Do you want to be VIP? Look like with /vipinfo."
+};
+new RandomSERVERMesagesLang1[][] =
 {
 	"     {EAFF63}« Información »   {C1FF63}¿Te aburres? Prueba uno de nuestros juegos, usa el comando {FFCC00}/m {99CC00}y juega.",
 	"     {EAFF63}« Información »   {C1FF63}¿Necesitas dinero? Mata o prueba jugar a nuestros juegos, usa {FFCC00}/m.",
@@ -36524,13 +36692,29 @@ new RandomSERVERMesages[][] =
 	"     {EAFF63}« Información »   {C1FF63}Agreganos a favoritos (IP: openknogle.eu:7777) para jugar siempre!",
 	"     {EAFF63}« Información »   {C1FF63}¿Necesitas ayuda? {FFCC00}/ayuda.",
 	"     {EAFF63}« Información »   {C1FF63}Super FreeRoam continua en desarrollo, puedes dejar tus sugerencias en el grupo de fb.",
-	"     {EAFF63}« Información »   {C1FF63}Visita nuestra página oficial de Facebook {C6D855}("SERVER_WEB")",
+	"     {EAFF63}« Información »   {C1FF63}Visita nuestra página oficial {C6D855}("SERVER_WEB")",
 	"     {EAFF63}« Información »   {C1FF63}Recuerda que puedes tunear tus vehículos y guardarlos!",
 	"     {EAFF63}« Información »   {C1FF63}Para comprar un vehículo ve a {C6D855}/conce.",
 	"     {EAFF63}« Información »   {C1FF63}Crea tu propia crew / clan con {FF7A45}/crearcrew.",
 	"     {EAFF63}« Información »   {C1FF63}¡Recomiendanos a tus amigos!",
 	"     {EAFF63}« Información »   {C1FF63}¿Quieres ser VIP? Mira como con /vipinfo."
 };
+new RandomSERVERMesagesLang2[][] =
+{
+	"     {EAFF63}« Información »   {C1FF63}Você está entediado? Experimente um dos nossos jogos, use o comando {FFCC00}/m {99CC00}e joga.",
+	"     {EAFF63}« Información »   {C1FF63}Você precisa de dinheiro? Mate ou tente jogar nossos jogos, use {FFCC00}/m.",
+	"     {EAFF63}« Información »   {C1FF63}Compre uma casa fantástica! Você encontrará muitos de San Andreas.",
+	"     {EAFF63}« Información »   {C1FF63}Adicione-nos aos favoritos (IP: openknogle.eu:7777) para sempre jogar!",
+	"     {EAFF63}« Información »   {C1FF63}Precisa de ajuda? {FFCC00} /ajuda.",
+	"     {EAFF63}« Información »   {C1FF63}Super FreeRoam continua em desenvolvimento, você pode deixar suas sugestões no grupo de fb.",
+	"     {EAFF63}« Información »   {C1FF63}Visite nosso site oficial {C6D855}("SERVER_WEB")",
+	"     {EAFF63}« Información »   {C1FF63}Lembre-se de que você pode ajustar seus veículos e salvá-los!",
+	"     {EAFF63}« Información »   {C1FF63}Para comprar um veículo, vá para {C6D855}/conce.",
+	"     {EAFF63}« Información »   {C1FF63}Crie sua própria equipe / clan com {FF7A45}/crearcrew.",
+	"     {EAFF63}« Información »   {C1FF63}Recomende-nos aos seus amigos!",
+	"     {EAFF63}« Información »   {C1FF63}Você quer ser VIP? Veja /vipinfo."
+};
+
 
 forward sendmessage();
 public sendmessage()
@@ -36609,7 +36793,7 @@ public sendmessage()
 	
 	
 	
-	SendClientMessageToAll(-1, RandomSERVERMesages[random(sizeof(RandomSERVERMesages))]);
+	SendMessageToAll(-1, RandomSERVERMesagesLang0[random(sizeof(RandomSERVERMesagesLang0))], RandomSERVERMesagesLang1[random(sizeof(RandomSERVERMesagesLang1))], RandomSERVERMesagesLang2[random(sizeof(RandomSERVERMesagesLang2))]);
 	return 1;
 }
 
@@ -37116,7 +37300,7 @@ ChangePlayerCrewRank(id, rank)
 			if(PI[i][P_ID] == id)
 			{
 				PI[i][P_CREW_RANK] = rank;
-				SendClientMessageEx(i, -1, "Tu rango en la crew ahora es {%x}%s.", CI[PI[i][P_CREW_SLOT]][C_COLOR], Crew_Ranks[PI[i][P_CREW_RANK]]);
+				SendMessageEx(i, -1, "Your rank in the crew is now {%x}%s.", "Tu rango en la crew ahora es {%x}%s.", "Sua classificação na tripulação é agora {%x}%s.", CI[PI[i][P_CREW_SLOT]][C_COLOR], Crew_Ranks[PI[i][P_CREW_RANK]]);
 				break;
 			}
 		}
@@ -37257,7 +37441,7 @@ PlaySocialSong(playerid, id)
 		db_get_field(Result, 0, song_title, 32);
 		db_get_field(Result, 1, url, 128);
 		PlayAudioStreamForPlayer(playerid, url);
-		SendClientMessageEx(playerid, -1, "{CCCCCC}Reproduciendo {90C3D4}'%s' {CCCCCC}usa {CCFF00}/play %d {CCCCCC}para volver a reproducir esta canción.", song_title, id);
+		SendMessageEx(playerid, -1, "{CCCCCC}Started playback of{90C3D4}'%s' {CCCCCC}use {CCFF00}/play %d {CCCCCC}to replay this song.", "{CCCCCC}Reproduciendo {90C3D4}'%s' {CCCCCC}usa {CCFF00}/play %d {CCCCCC}para volver a reproducir esta canción.", "{CCCCCC}Reproduzindo {90C3D4}'%s' {CCCCCC}usa {CCFF00}/play %d {CCCCCC}para tocar essa música novamente.", song_title, id);
 		
 		if(gettime() > PI[playerid][P_MUSIC_ANTIFLOOD] + 30)
 		{
